@@ -5,14 +5,18 @@ controller_list* head;
 void
 main (void) {
 
-	//prepeare to search
-	short bt_dev_id = hci_get_route (NULL), bt_dev_sock = hci_open_dev (bt_dev_id);
+	//set bluetooth device
+	short bt_dev_id = -1,\
+		bt_dev_sock = -1;
 
-	if (bt_dev_id < 0 || bt_dev_sock < 0) {
+	//set process priority low until bluetooth turned on
+	nice (19);
 
-		perror ("Bluetooth is propaply off");
-		exit (errno);
-	}
+	while( (bt_dev_id = hci_get_route (NULL)) < 0 || (bt_dev_sock = hci_open_dev (bt_dev_id)) < 0 ) {}
+
+	nice (0);
+
+	//set to search
 
 	inquiry_info* inq_info = NULL;
 	short num_rsp = 0;
@@ -42,6 +46,7 @@ main (void) {
 			    ((inq_info+i)->dev_class[1] << 8) | \
 			    (inq_info+i)->dev_class[0];
 
+		//check device is controller
 		if (dev_class == CLS_DEV) {
 
 			//add to list, returns 1 on fail

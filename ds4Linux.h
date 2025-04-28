@@ -7,6 +7,7 @@
 #include <bluetooth/l2cap.h>
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/socket.h>
