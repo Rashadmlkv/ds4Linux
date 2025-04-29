@@ -1,9 +1,10 @@
 CC = gcc
-FLAGS = -o $(DAEMON) -Wall -Wextra -Werror -std=gnu18
-DIR = src/dmn/*.c hdr/dmn/*.h
+FLAGS = -std=gnu18 -Wall -Wextra -Werror -iquote $(HEADER) -o $(DAEMON) $(SOURCE)
+HEADER = hdr/dmn/
+SOURCE = src/dmn/*.c
 DAEMON = ds4Linux_dmn
 
-DAEMON: src/dmn/*.c hdr/dmn/*.h
-	$(CC) $(FLAGS) $(DIR) -lbluetooth
+DAEMON:
+	$(CC) $(FLAGS) -lbluetooth
 clean:
 	rm ds4Linux_dmn

@@ -1,31 +1,42 @@
-#include "../../hdr/dmn/dmn.h"
+#include "dmn.h"
 
+bd bdev;
 int
 main ( void) {
 
+	//daemonize the process
+
 start:
 
-	/*
-	 * lower process priority until bluetooth is active
-	 */
-	errno = 0;
-	if ( nice( 19) == -1 && errno != 0) {
+	//lower priority
+	priority( 19);
 
-		perror( "");
-	}
-
+	//wait until bluetooth turned on
 	while ( hci_get_route( NULL) == -1);
 
-	/*
-	 * search for bluetooth devices until bluetooth is deactive
-	 */
-	errno = 0;
-        if ( nice( 0) == -1 && errno != 0) {
+	//increase priority
+	priority( 0);
 
-                perror( "");
-        }
+	//set bluetooth adapter
+	setBluetoothAdapter();
+
+	if ( !(bdev.inq_info))
+		goto finish;
+
+	//do stuff until bluetooth turned off
+	do {
+
+		//search devices
+		searchDevices();
+	        //check device is controller
+		isController();
+		//install module
+	} while ( hci_get_route ( NULL) != -1);
 
 	goto start;
 
+finish:
+	//cleanup
+	
 	return (errno);
 }
