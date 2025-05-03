@@ -1,42 +1,39 @@
 #include "dmn.h"
 
-bd bdev;
+bluetooth_device bdev;
+gamepad_list * gamepads;
+struct sockaddr_l2 gamepad_sock;
+
 int
-main ( void) {
+main (void) {
 
-	//daemonize the process
+	gamepad_sock.l2_family = AF_BLUETOOTH;
 
-start:
+mainloop:
+	
 
-	//lower priority
-	priority( 19);
-
-	//wait until bluetooth turned on
 	while ( hci_get_route( NULL) == -1);
+	
+	initBluetoothDevice();
 
-	//increase priority
-	priority( 0);
-
-	//set bluetooth adapter
-	setBluetoothAdapter();
-
-	if ( !(bdev.inq_info))
-		goto finish;
-
-	//do stuff until bluetooth turned off
 	do {
 
-		//search devices
-		searchDevices();
-	        //check device is controller
-		isController();
-		//install module
-	} while ( hci_get_route ( NULL) != -1);
+		gamepadConnect();
+	} while ( hci_get_route( NULL) != -1);
 
-	goto start;
+	goto mainloop;
 
-finish:
-	//cleanup
-	
-	return (errno);
+quit:
+	return 0;
+}
+
+
+void initBluetoothDevice () {
+
+	bdev.id = hci_get_route( NULL);
+	bdev.num_rsp = 0;
+	bdev.inq_info = malloc( MAX_RSP * sizeof( inquiry_info));
+
+	if ( !(bdev.inq_info))
+		printf ("PLACEHOLDER REMOVE ME , I will raise sig\n");
 }
