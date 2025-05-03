@@ -23,7 +23,7 @@ mainloop:
 
 	goto mainloop;
 
-quit:
+//quit:
 	return 0;
 }
 

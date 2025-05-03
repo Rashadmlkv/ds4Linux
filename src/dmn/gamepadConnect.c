@@ -44,7 +44,7 @@ int8_t gamepadsAppend (uint8_t i) {
         } else {
 
                 gamepad_list * tmp = gamepads;
-                char * tmpbdaddr;
+                char * tmpbdaddr = NULL;
                 ba2str( &(bdev.inq_info + i)->bdaddr, tmpbdaddr);
                 //check if gamepad already registered
                 for ( ; tmp->next; tmp = tmp->next) {
@@ -69,12 +69,12 @@ int8_t gamepadsAppend (uint8_t i) {
                 }
 
         }
+	return 0;
 }
 
 int8_t tryConnect (gamepad_list * node, uint8_t i) {
 
         gamepad_sock.l2_bdaddr = (bdev.inq_info + i)->bdaddr;
-        printf ("sa\n");
         gamepad_sock.l2_psm = htobs( HCI_CTRL);
 
         int8_t ctrl = connect( node->sockCTRL,\
@@ -87,12 +87,10 @@ int8_t tryConnect (gamepad_list * node, uint8_t i) {
                         sizeof( gamepad_sock));
 
         if ( !(ctrl) && !(itrp)){
-                printf ("oldu\n");
                 return (1);
 
         }
         else{
-                printf ("%d, %d olmadi\n", ctrl, itrp);
                 return (0);
 
         }
