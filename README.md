@@ -1,8 +1,8 @@
-#Dual Shock 4 device driver for Linux systems :video_game:
+# Dual Shock 4 device driver for Linux systems :video_game:
 
 Current state: prototype 60-70% completed
 
-###TODO
+### TODO
 ```
 - [x] Search is blocking, have to assign thread to it
 - [x] Handle connections properly (nonblocking & drop handling)
