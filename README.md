@@ -1,7 +1,8 @@
 Current state prototype.
 
 TODO
-Switch to kernel module
+search is blocking read, have to assign thread to it
+write kernel module
 Handle connections properly (nonblocking & drop handling)
 
 Video

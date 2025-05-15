@@ -1,22 +1,28 @@
 #ifndef LIST_H
 #define LIST_H
+
 #include "gamepad.h"
+#include "thread.h"
 #define GAMEPAD_CLASS 0x002508
 
 typedef struct list {
-	
-	__attribute__((unused))Gamepad* gamepads;
-	void (*append)(struct list* self, int8_t num_rsp, inquiry_info* inq_info); //wrapper
-	int8_t (*find)(inquiry_info* inq_info); //find gamepad in inquiry_info    
-	int8_t (*check) (struct list* self, bdaddr_t* bdaddr); //check gamepad already in list
-	void (*add) (struct list* self, bdaddr_t bdaddr); //append new gamepad to list
-	void (*rmv) (struct gamepad* node); //remove gamepad from list
+
+	Gamepad* gamepads;
+	Thread* threads;
+        void(*append)(struct list* self, inquiry_info* inq_info, int8_t num_rsp);
+        int8_t(*isGamepad)(uint8_t dev_class[]);
+        int8_t(*compare)(struct list* self, bdaddr_t* bdaddr);
+        int8_t(*addGamepad) (struct list* self, bdaddr_t bdaddr);
+	int8_t(*addThread) (struct list* self, Gamepad* gamepad);
+        void (*rmv) (struct gamepad* node);
 } List;
 
-void append (List* self, int8_t num_rsp, inquiry_info* inq_info);
-int8_t find (inquiry_info* inq_info);
-int8_t check (struct list* self, bdaddr_t* bdaddr);
-void add (struct list* self, bdaddr_t bdaddr);
-void rmv (struct gamepad* node);
-List* newList (void);
+List* newList(void);
+void initList (List* self);
+void deleteList(List* self);
+void append(List* self, inquiry_info* inq_info, int8_t num_rsp);
+int8_t isGamepad(uint8_t dev_class[]);
+int8_t compare(List* self, bdaddr_t* bdaddr);
+int8_t addGamepad (List* self, bdaddr_t bdaddr);
+int8_t addThread(struct list* self, Gamepad* gamepad);
 #endif

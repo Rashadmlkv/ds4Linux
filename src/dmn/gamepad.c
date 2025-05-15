@@ -1,66 +1,75 @@
-#include "dmn.h"
+#include "ds4linux.h"
 
-
-/*
- * newGamepad - allocates memory for new Gamepad object
- *
- * return: newly allocated memory address
- */
 Gamepad* newGamepad(void) {
 
+	printf("Allocating gamepad\n");
 	Gamepad* newgamepad = malloc(sizeof(Gamepad));
-	
-	newgamepad->next = NULL;
-	memset(&newgamepad->bdaddrstr, 0, sizeof(newgamepad->bdaddrstr));
-	newgamepad->connect = &connectGamepad;
-	newgamepad->disconnect = &disconnectGamepad;
-	memset(&newgamepad->bdaddr, 0, sizeof(newgamepad->bdaddr));
-	newgamepad->sockCTRL = newgamepad->sockITRP = 0;
+
+	if (newgamepad)
+		initGamepad(newgamepad);
+
 	return (newgamepad);
 }
 
-/*
- * connectGamepad - connects to gamepad
- *
- * @self: a gamepad object
- * @bdaddr: bluetooth address of gamepad
- *
- * return: 0 on succesfull connection, -1 on error
- */
-int8_t connectGamepad (struct gamepad* self, bdaddr_t bdaddr) {
+void initGamepad(Gamepad* self) {
 
-	self->bdaddr = bdaddr;
-	ba2str(&self->bdaddr, self->bdaddrstr);
-	struct sockaddr_l2 rem_sock;
-	memset(&rem_sock, 0, sizeof(rem_sock));
-	errno = 0;
-
+	printf("initializing gamepad\n");
+	memset(self, 0, sizeof(Gamepad));
+	self->connect = &connectGamepad;
+	self->disconnect = &disconnectGamepad;
+	self->send = &sendGamepad;
+	self->recv = &recvGamepad;
 	self->sockCTRL = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
-        self->sockITRP = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
-	
-	rem_sock.l2_family = AF_BLUETOOTH;
-	rem_sock.l2_bdaddr = self->bdaddr;
-
-	rem_sock.l2_psm = htobs(HID_CTRL);
-	connect(self->sockCTRL, (struct sockaddr *) &rem_sock, sizeof(rem_sock));
-	
-	rem_sock.l2_psm = htobs(HID_ITRP);
-	connect(self->sockITRP, (struct sockaddr *) &rem_sock, sizeof(rem_sock));
-	perror("");	
-	if (errno != 0)
-		return (-1);
-	else
-		return (0);
+	self->sockITRP = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
 }
 
-/*
- * disconnectGamepad - closes connection to gamepad
- * 
- * @self: a gamepad object
- */
-void disconnectGamepad (struct gamepad* self) {
+void deleteGamepad(Gamepad* self){
 
-//in case socket() failed
+	printf("deleting gamepad\n");
+	disconnectGamepad(self);
+	free(self);
+}
+
+void connectGamepad (Gamepad* self, bdaddr_t bdaddr) {
+
+	printf("connecting gamepad\n");
+	struct sockaddr_l2 rem_sock;
+	memset(&rem_sock, 0, sizeof(struct sockaddr_l2));
+	rem_sock.l2_bdaddr = bdaddr;
+	rem_sock.l2_family = AF_BLUETOOTH;
+	rem_sock.l2_psm = htobs(HID_CTRL);
+	
+	connect(self->sockCTRL,\
+		       	(struct sockaddr*)&rem_sock,\
+		       	sizeof(struct sockaddr_l2));
+	rem_sock.l2_psm = htobs(HID_ITRP);
+
+	connect(self->sockITRP,\
+                        (struct sockaddr*)&rem_sock,\
+                        sizeof(struct sockaddr_l2));
+	ba2str(&bdaddr, self->bdaddr);
+}
+
+void disconnectGamepad(Gamepad* self) {
+
+	printf("disconnecting gamepad\n");
 	close(self->sockCTRL);
 	close(self->sockITRP);
+}
+
+void sendGamepad() {
+
+}
+
+void recvGamepad(Gamepad* self) {
+
+	printf("Receiving input\n");	
+	uint8_t buffer[11];
+	recv(self->sockITRP, buffer, sizeof(buffer), 0);
+	
+	for(int i = 0; i < 11; i++){
+
+		printf("%d: ", buffer[i]);
+	}
+	printf("\n");
 }

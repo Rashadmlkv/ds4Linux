@@ -1,28 +1,38 @@
-#include "dmn.h"
+#include "ds4linux.h"
 
-/*
- * newHci - allocates memory for new Hci object
- *
- * return: newly allocated memory
- */
-Hci* newHCI (void) {
+Hci* newHci(void) {
 
-        Hci* bd;
+	printf("Allocating hci\n");
+	Hci* newhci = malloc(sizeof(Hci));
 
-        bd = malloc( sizeof( Hci));
-        bd->inq_info = malloc( sizeof( inquiry_info) * MAX_LEN);
-        bd->id = hci_get_route( NULL);
-        bd->num_rsp = 0;
-        bd->inquiry = &inquiry;
+	if (newhci)
+		initHci(newhci);
 
-        return (bd);
+	return (newhci);
 }
 
-/*
- * inquiry - performs search of bluetooth devices
- *
- */
-void inquiry (Hci* bdev) {
+void initHci(Hci* self) {
 
-	bdev->num_rsp = hci_inquiry(bdev->id, LEN, MAX_LEN, NULL, &bdev->inq_info, IREQ_CACHE_FLUSH);
+	printf("Initializing hci\n");
+	memset(self, 0, sizeof(Hci));
+	self->inquiry = &inquiry;
+	self->id = hci_get_route(NULL);
+}
+
+void deleteHci(Hci* self) {
+
+	printf("Deleting hci\n");
+	free(self->inq_info);
+	free(self);
+}
+
+void inquiry(Hci* self) {
+
+	printf("Inquirying devices\n");
+	self->num_rsp = hci_inquiry(self->id,\
+		       	LEN,\
+		       	MAX_RSP,\
+		       	NULL,\
+		       	&self->inq_info,\
+		       	IREQ_CACHE_FLUSH);
 }

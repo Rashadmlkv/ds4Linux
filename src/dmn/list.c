@@ -1,131 +1,115 @@
-#include "dmn.h"
+#include "ds4linux.h"
 
-/*
- * newList - allocates memorf for new List object
- *
- * return: newly allocated address
- */
-List* newList (void) {
- 
+List* newList(void){
+
+	printf("Allocating list\n");
 	List* newlist = malloc(sizeof(List));
-	__attribute__((unused))Gamepad* gamepads = NULL;
-	newlist->append = &append;
-	newlist->find = &find;
-	newlist->check = &check;
-	newlist->add = &add;
-	newlist->rmv = &rmv;
+
+	initList(newlist);
+
 	return (newlist);
 }
 
-/*
- * append - wrapper for adding node to list
- *
- * @self: a list object
- * @num_rsp: number of devices got in inquiry
- * @inq_info: linked list of found devices
- */
-void append (struct list* self, int8_t num_rsp, inquiry_info* inq_info) {
+void initList (List* self) {
 
-	for (int8_t i = 0; i < num_rsp; i++) {
+	printf("Initializing list\n");
+	memset(self, 0, sizeof(List));
+        self->append = &append;
+        self->isGamepad = &isGamepad;
+        self->compare = &compare;
+        self->addGamepad = &addGamepad;
+	self->addThread = &addThread;
+        //self->rmv = &rmv;
+}
 
-		//gamepad found and is not in list, add to list
-		if (!(self->find(inq_info + i)) &&\
-				!(self->check(self,&(inq_info + i)->bdaddr))) {
+void deleteList(List* self) {
 
-			self->add(self, (inq_info + i)->bdaddr);
+	printf("Deleting list\n");
+	Gamepad* temp = self->gamepads;
+	for (; temp;) {
+
+		self->gamepads = temp->next;
+		deleteGamepad(temp);
+		temp = self->gamepads;
+	}
+	free(self);
+}
+
+void append(List* self, inquiry_info* inq_info, int8_t num_rsp) {
+
+	printf("Appending to list\n");
+	for (uint8_t i = 0; i < num_rsp; ++i) {
+	
+		if (!(self->isGamepad((inq_info + i)->dev_class)) &&\
+				!(self->compare(self, &(inq_info + i)->bdaddr))) {
+			
+			self->addGamepad(self, (inq_info + i)->bdaddr);
+			self->addThread(self, self->gamepads);
 		}
 	}
 }
 
-/*
- * find - find controller from list
- *
- * @inq_info: node of linked list
- * return: 0 is controller, -1 not
- */
-int8_t find (inquiry_info* inq_info) {
+int8_t isGamepad(uint8_t dev_class[]) {
 
-	//device is gamepad
-	if (GAMEPAD_CLASS == ((inq_info->dev_class[2] << 16)|\
-				(inq_info->dev_class[1] << 8)|\
-				(inq_info->dev_class[0])))
+	printf("Checking device class\n");
+	if (GAMEPAD_CLASS == ((dev_class[2] << 16)|\
+				(dev_class[1] << 8)|\
+				(dev_class[0])))
 		return (0);
 	else
 		return (-1);
 }
 
-/*
- * check - checks controller with bdaddr is in list
- *
- * @self: a list object
- * @bdaddr: bluetooth address of gamepad
- * return: 0 is not in list, -1 is
- */
-int8_t check (struct list* self, bdaddr_t* bdaddr) {
+int8_t compare(List* self, bdaddr_t* bdaddr) {
 
-	//gamepads list is not empty
+	printf("Comparing device\n");
 	if (self->gamepads) {
-	
-		char bdaddrstr[18];
+
+		char bdaddrstr[19];
 		ba2str(bdaddr, bdaddrstr);
-		Gamepad* tmp = self->gamepads;
-
-		for (; tmp->next; tmp=tmp->next) {
-
-			//already in list
-			if (!(strcmp(bdaddrstr, tmp->bdaddrstr))) {
-
+		Gamepad* temp = self->gamepads;
+		for (; temp->next; temp = temp->next) {
+		
+			if (!(strcmp(temp->bdaddr, bdaddrstr)))
 				return (-1);
-			}
 		}
 	}
 	return (0);
 }
 
-/*
- * add - adds node to list
- * 
- * @self: a list object
- * @bdaddr: bluetooth address of gamepad
- */
-void add (struct list* self, bdaddr_t bdaddr) {
+int8_t addGamepad (List* self, bdaddr_t bdaddr) {
+
+	printf("Adding device to list\n");
+	Gamepad* gamepad = newGamepad();
+
+	gamepad->connect(gamepad, bdaddr);
 
 	if (!(self->gamepads)) {
-
-		Gamepad* node = newGamepad();
-
-		//object is created but connection failed
-        	if (node && node->connect(node, bdaddr)) {
 	
-			self->rmv(node);
-        	}
+		self->gamepads = gamepad;
+		gamepad->next = NULL;
 	} else {
 	
-		Gamepad* tmp = self->gamepads;
-		
-		while (tmp->next)
-			tmp = tmp->next;
-
-		Gamepad* node = newGamepad();
-
-		//object is created but connection failed
-		if (node && node->connect(node, bdaddr)) {
-
-                        self->rmv(node);
-                } else {
-		
-			tmp->next = node;
-		}
+		gamepad->next = self->gamepads;
+		self->gamepads = gamepad;
 	}
+	return (0);
 }
 
-/*
- * rmv - removes gamepad from list
- *
- * @node: a gamepad object
- */
-void rmv (struct gamepad* node) {
+int8_t addThread(List* self, Gamepad* gamepad) {
 
-	node->disconnect(node);
-	free(node);
+	Thread* thread = newThread();
+
+	thread->create(thread, gamepad);
+
+	if (!(self->threads)) {
+	
+		self->threads = thread;
+		thread->next = NULL;
+	} else {
+	
+		thread->next = self->threads;
+		self->threads = thread;
+	}
+	return (0);
 }
