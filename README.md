@@ -9,4 +9,4 @@ Current state: prototype 60-70% completed
 - [] write kernel module
 ```
 
-<video src='https://www.linkedin.com/posts/rashadmlk_httpslnkdinec7ukfpj-activity-7319479713092038658-YIsa?utm_source=share&utm_medium=member_android&rcm=ACoAAEcHROQBsrusup3N3dM5TE14DwDFTKPy7wg' width=180/>
+[VIDEO](https://www.linkedin.com/posts/rashadmlk_httpslnkdinec7ukfpj-activity-7319479713092038658-YIsa?utm_source=share&utm_medium=member_android&rcm=ACoAAEcHROQBsrusup3N3dM5TE14DwDFTKPy7wg)
