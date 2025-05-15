@@ -1,5 +1,10 @@
 #include "ds4linux.h"
 
+/*
+ * newGamepad - object constructor
+ *
+ * return: Object struct pointer
+ */
 Gamepad* newGamepad(void) {
 
 	printf("Allocating gamepad\n");
@@ -11,6 +16,11 @@ Gamepad* newGamepad(void) {
 	return (newgamepad);
 }
 
+/*
+ * initGamepad - object initializer
+ *
+ * @self: Object struct pointer
+ */
 void initGamepad(Gamepad* self) {
 
 	printf("initializing gamepad\n");
@@ -23,6 +33,11 @@ void initGamepad(Gamepad* self) {
 	self->sockITRP = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
 }
 
+/*
+ * deleteGamepad - object destructor
+ *
+ * @self: Object struct pointer
+ */
 void deleteGamepad(Gamepad* self){
 
 	printf("deleting gamepad\n");
@@ -30,6 +45,12 @@ void deleteGamepad(Gamepad* self){
 	free(self);
 }
 
+/*
+ * connectGamepad - makes connection to gamepad
+ *
+ * @self: Object struct pointer
+ * @bdaddr: bluetooth address of gamepad
+ */
 void connectGamepad (Gamepad* self, bdaddr_t bdaddr) {
 
 	printf("connecting gamepad\n");
@@ -50,6 +71,11 @@ void connectGamepad (Gamepad* self, bdaddr_t bdaddr) {
 	ba2str(&bdaddr, self->bdaddr);
 }
 
+/*
+ * disconnectGamepad - removes connection from gamepad
+ *
+ * @self: Object struct pointer
+ */
 void disconnectGamepad(Gamepad* self) {
 
 	printf("disconnecting gamepad\n");
@@ -57,10 +83,20 @@ void disconnectGamepad(Gamepad* self) {
 	close(self->sockITRP);
 }
 
+/*
+ * sendGamepad - writes to gamepad
+ *
+ * @self: struct pointer
+ */
 void sendGamepad() {
 
 }
 
+/*
+ * recvGamepad - read from gamepad
+ *
+ * @self: Object struct pointer
+ */
 void recvGamepad(Gamepad* self) {
 
 	printf("Receiving input\n");	

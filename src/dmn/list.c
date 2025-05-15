@@ -1,5 +1,10 @@
 #include "ds4linux.h"
 
+/*
+ * newList - object constructor
+ * 
+ * return: struct pointer
+ */
 List* newList(void){
 
 	printf("Allocating list\n");
@@ -10,6 +15,11 @@ List* newList(void){
 	return (newlist);
 }
 
+/*
+ * initList - object initializer
+ *
+ * @self: list object
+ */
 void initList (List* self) {
 
 	printf("Initializing list\n");
@@ -22,6 +32,11 @@ void initList (List* self) {
         //self->rmv = &rmv;
 }
 
+/*
+ * deleteList - object destructor
+ *
+ * @self: list object
+ */
 void deleteList(List* self) {
 
 	printf("Deleting list\n");
@@ -35,6 +50,13 @@ void deleteList(List* self) {
 	free(self);
 }
 
+/*
+ * append - wrapper for adding gamepad to list
+ *
+ * @self: list object
+ * @inq_info: found nearby bluetooth devices
+ * @num_rsp: count of found nearby bluetooth devices
+ */
 void append(List* self, inquiry_info* inq_info, int8_t num_rsp) {
 
 	printf("Appending to list\n");
@@ -49,6 +71,11 @@ void append(List* self, inquiry_info* inq_info, int8_t num_rsp) {
 	}
 }
 
+/*
+ * isGamepad - checks bluetooth device is gamepad
+ * 
+ * @dev_class: Class of bluetooth device
+ */
 int8_t isGamepad(uint8_t dev_class[]) {
 
 	printf("Checking device class\n");
@@ -60,6 +87,14 @@ int8_t isGamepad(uint8_t dev_class[]) {
 		return (-1);
 }
 
+/*
+ * compare - checks gamepad is already in list
+ *
+ * @self: list object
+ * @bdaddr: bluetooth address of gamepad
+ *
+ * return: -1 if in list, 0 if not
+ */
 int8_t compare(List* self, bdaddr_t* bdaddr) {
 
 	printf("Comparing device\n");
@@ -77,6 +112,14 @@ int8_t compare(List* self, bdaddr_t* bdaddr) {
 	return (0);
 }
 
+
+//This function and thread will be reformatted
+/*
+ * addGamepad - adds gamepad to list
+ *
+ * @self: list object
+ * @bdaddr: bluetooth address of gamepad
+ */
 int8_t addGamepad (List* self, bdaddr_t bdaddr) {
 
 	printf("Adding device to list\n");
@@ -96,6 +139,12 @@ int8_t addGamepad (List* self, bdaddr_t bdaddr) {
 	return (0);
 }
 
+/*
+ * addThread - add thread to list
+ *
+ * @self: list object
+ * @gamepad: gamepad object 
+ */
 int8_t addThread(List* self, Gamepad* gamepad) {
 
 	Thread* thread = newThread();

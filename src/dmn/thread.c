@@ -1,5 +1,10 @@
 #include "ds4linux.h"
 
+/*
+ * newThread - object constructor
+ *
+ * return: struct pointer
+ */
 Thread* newThread(void) {
 
 	printf("Allocating thread\n");
@@ -10,6 +15,11 @@ Thread* newThread(void) {
 	return (newthread);
 }
 
+/*
+ * initThread - object initializer
+ *
+ * @self: thread object
+ */
 void initThread(Thread* self) {
 
 	printf("Initializing thread\n");
@@ -19,12 +29,23 @@ void initThread(Thread* self) {
 	self->dev_mod_IO = &dev_mod_IO;
 }
 
+/*
+ * deleteThread - object destructor
+ *
+ * @self: thread object
+ */
 void deleteThread(Thread* self) {
 
 	printf("Deleting thread\n");
 	free(self);
 }
 
+/*
+ * createThread - creates new thread
+ *
+ * @self: thread object
+ * @gamepad: gamepad object
+ */
 void createThread(Thread* self, Gamepad* gamepad) {
 
 	printf("Creating thread\n");
@@ -33,6 +54,11 @@ void createThread(Thread* self, Gamepad* gamepad) {
 	pthread_create(&self->id, NULL, self->dev_mod_IO, &self->args);
 }
 
+/*
+ * closeThread - exits from thread
+ *
+ * @self: thread object
+ */
 void closeThread(Thread* self) {
 
 	(void)self;
@@ -40,6 +66,11 @@ void closeThread(Thread* self) {
 	pthread_exit(0);
 }
 
+/*
+ * dev_mod_IO - IO operations between device & module
+ *
+ * @args: struct of gamepad & module objects
+ */
 void* dev_mod_IO(void* args) {
 
 	printf("Performing io operations\n");

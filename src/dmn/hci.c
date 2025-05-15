@@ -1,5 +1,11 @@
 #include "ds4linux.h"
 
+
+/*
+ * newHci - object constructor
+ * 
+ * return: struct pointer
+ */
 Hci* newHci(void) {
 
 	printf("Allocating hci\n");
@@ -11,6 +17,11 @@ Hci* newHci(void) {
 	return (newhci);
 }
 
+/*
+ * initHci - object initializer
+ *
+ * @self: Local bluetooth adapter object
+ */
 void initHci(Hci* self) {
 
 	printf("Initializing hci\n");
@@ -19,6 +30,11 @@ void initHci(Hci* self) {
 	self->id = hci_get_route(NULL);
 }
 
+/*
+ * deleteHci - object destructor
+ *
+ * @self: Local bluetooth adapter object
+ */
 void deleteHci(Hci* self) {
 
 	printf("Deleting hci\n");
@@ -26,6 +42,12 @@ void deleteHci(Hci* self) {
 	free(self);
 }
 
+
+/*
+ * inquiry - search nearby bluetooth devices
+ *
+ * @self: Local bluetooth adapter object
+ */
 void inquiry(Hci* self) {
 
 	printf("Inquirying devices\n");
