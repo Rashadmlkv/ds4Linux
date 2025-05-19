@@ -2,6 +2,10 @@
 
 Current state: prototype 60-70% completed
 
+## Description
+Project consist of two distinct programs. Kernel module and Daemon.
+Daemon has two distinct threads. First the main loop. Second each gamepads' own thread. 
+
 ### TODO
 ```
 - [x] Search is blocking, have to assign thread to it
