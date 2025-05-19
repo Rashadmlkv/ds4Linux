@@ -1,10 +1,16 @@
-# Dual Shock 4 device driver for Linux systems :video_game:
-
-Current state: prototype 60-70% completed
+# DS4LINUX
+Dual Shock 4 device driver for Linux systems :video_game:
 
 ## Description
 Project consist of two distinct programs. Kernel module and Daemon.
 Daemon has two distinct threads. First the main loop. Second each gamepads' own thread. 
+
+## Features
+todo
+## Prerequisites
+todo
+## Installation
+todo
 
 ### TODO
 ```
