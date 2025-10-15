@@ -12,4 +12,7 @@ todo
 ## Installation
 todo
 
+## References
+https://who-t.blogspot.com/2016/05/the-difference-between-uinput-and-evdev.html
+
 [VIDEO](https://www.linkedin.com/posts/rashadmlk_httpslnkdinec7ukfpj-activity-7319479713092038658-YIsa?utm_source=share&utm_medium=member_android&rcm=ACoAAEcHROQBsrusup3N3dM5TE14DwDFTKPy7wg)
